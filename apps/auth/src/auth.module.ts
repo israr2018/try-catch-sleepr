@@ -5,6 +5,9 @@ import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
+import { AuthService } from './auth.service';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -17,6 +20,8 @@ import { LoggerModule } from 'nestjs-pino';
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION: Joi.string().required(),
         PORT: Joi.number().required(),
+        HTTP_PORT: Joi.number().required(),
+        TCP_PORT: Joi.number().required(),
       }),
     }),
     JwtModule.registerAsync({
@@ -30,6 +35,6 @@ import { LoggerModule } from 'nestjs-pino';
     }),
   ],
   controllers: [AuthController],
-  providers: [],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}

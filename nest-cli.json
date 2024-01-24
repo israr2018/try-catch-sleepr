@@ -35,13 +35,13 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
-    "web": {
+    "payments": {
       "type": "application",
-      "root": "apps/web",
+      "root": "apps/payments",
       "entryFile": "main",
-      "sourceRoot": "apps/web/src",
+      "sourceRoot": "apps/payments/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/web/tsconfig.app.json"
+        "tsConfigPath": "apps/payments/tsconfig.app.json"
       }
     }
   },

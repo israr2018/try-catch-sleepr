@@ -1,4 +1,4 @@
-export * from '../config/config.module';
+// export * from '../config/config.module';
 export * from './database.module';
 export * from './abstract.repository';
 export * from './abstract.schema';
