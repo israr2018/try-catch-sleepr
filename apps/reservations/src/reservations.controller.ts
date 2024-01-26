@@ -12,14 +12,20 @@ import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { JwtAuthGuard } from '@app/common';
+import { CurrentUser } from 'apps/auth/src/users/current-user-decorator';
+import { UserDocument } from 'apps/auth/src/users/models/user.schema';
+import { UserDto } from '@app/common/dto/user.dto';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReservationDto: CreateReservationDto) {
-    return this.reservationsService.create(createReservationDto);
+  create(
+    @Body() createReservationDto: CreateReservationDto,
+    @CurrentUser() user: UserDto,
+  ) {
+    return this.reservationsService.create(createReservationDto, user);
   }
 
   @Get()

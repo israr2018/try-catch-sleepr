@@ -5,20 +5,36 @@ import { ReservationsRepository } from './reservations.repository';
 import mongoose from 'mongoose';
 import { PAYMENTS_SERVICE } from '@app/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { UserDto } from '@app/common/dto/user.dto';
+import { map } from 'rxjs';
 
 @Injectable()
 export class ReservationsService {
   constructor(
     private readonly reservationsRespoitory: ReservationsRepository,
-    @Inject(PAYMENTS_SERVICE) paymentsService: ClientProxy,
+    @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy,
   ) {}
 
-  async create(createReservationDto: CreateReservationDto) {
-    return this.reservationsRespoitory.create({
-      ...createReservationDto,
-      timestamp: new Date(),
-      userId: '123',
-    });
+  async create(
+    createReservationDto: CreateReservationDto,
+    { _id: userId }: UserDto,
+  ) {
+    return this.paymentsService
+      .send('create_charge', createReservationDto.charge)
+      .pipe(
+        map((res) => {
+          return this.reservationsRespoitory.create({
+            ...createReservationDto,
+            timestamp: new Date(),
+            invoiceId: res.id,
+            userId,
+          });
+        }),
+      );
+    // .subscribe(async (response) => {
+    //   console.log(response);
+
+    // });
   }
 
   async findAll() {
