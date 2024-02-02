@@ -11,6 +11,7 @@ services:
       - '3000:3000'
     volumes:
       - .:/usr/src/app
+      
   auth:
     build:
       context: .
@@ -33,7 +34,19 @@ services:
     env_file:
       - ./apps/payments/.env
     ports:
-      - '3003:3003'
+      -  '3003:3003'
+    volumes:
+      - .:/usr/src/app
+
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: pnpm run start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
+   
     volumes:
       - .:/usr/src/app
 

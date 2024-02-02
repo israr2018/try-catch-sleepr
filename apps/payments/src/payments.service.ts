@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import { CreateChargeDto } from '../../../libs/common/src/dto/create-charge.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { NOTIFICATIONS_SERVICE } from '@app/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { PaymentsCreateChargeDto } from './dto/payments-create-charge.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -12,8 +14,12 @@ export class PaymentsService {
       apiVersion: '2023-10-16',
     },
   );
-  constructor(private readonly configService: ConfigService) {}
-  async createCharge({ card, amount }: CreateChargeDto) {
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(NOTIFICATIONS_SERVICE)
+    private readonly notificationsService: ClientProxy,
+  ) {}
+  async createCharge({ card, amount, email }: PaymentsCreateChargeDto) {
     console.log(`Card:${card} amount:${amount}`);
     // const paymentMethod = await this.stripe.paymentMethods.create({
     //   type: 'card',
@@ -28,11 +34,15 @@ export class PaymentsService {
     //   currency: 'usd',
     // });
     // return paymentIntent;
+    this.notificationsService.emit('notify_email', {
+      email,
+      text: `Your payment of $${amount} has completed successfully.`,
+    });
     return {
       id: uuidv4(),
     };
   }
-  async createCharge2({ card, amount }: CreateChargeDto) {
+  async createCharge2({ card, amount }: PaymentsCreateChargeDto) {
     console.log(`Card:${card} amount:${amount}`);
     // const paymentMethod = await this.stripe.paymentMethods.create({
     //   type: 'card',
@@ -44,8 +54,9 @@ export class PaymentsService {
       confirm: true,
       payment_method: 'pm_card_visa',
       currency: 'usd',
-      automatic_payment_methods: true,
+      // automatic_payment_methods: true,
     });
+
     return paymentIntent;
   }
 }
