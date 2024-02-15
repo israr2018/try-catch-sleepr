@@ -27,7 +27,7 @@ RUN npm install -g pnpm
 
 RUN pnpm install --prod
 
-COPY --from=development user/src/app/dist ./dist
+COPY --from=development /user/src/app/dist ./dist
 
 
 
